@@ -7,6 +7,8 @@
     "WindowsOS/Common/README.md",
     "WindowsOS/README.md",
     "WindowsOS/【WindowsOS】子卷合并/README.md",
-    "WindowsOS/【WindowsOS】源文件压缩分卷/README.md"
+    "WindowsOS/【WindowsOS】源文件压缩分卷/README.md",
+    "MacOS/split.command/README.md",
+    "MacOS/merge.command/README.md"
   ]
 }

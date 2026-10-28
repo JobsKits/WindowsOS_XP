@@ -6,4 +6,6 @@
 "/WindowsOS/README.md" filter=jobs-markdown-toc
 "/WindowsOS/【WindowsOS】子卷合并/README.md" filter=jobs-markdown-toc
 "/WindowsOS/【WindowsOS】源文件压缩分卷/README.md" filter=jobs-markdown-toc
+"/MacOS/split.command/README.md" filter=jobs-markdown-toc
+"/MacOS/merge.command/README.md" filter=jobs-markdown-toc
 # jobs-markdown-toc:end

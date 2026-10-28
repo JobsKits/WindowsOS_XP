@@ -23,17 +23,28 @@
 
 ## <span id="jobs-toc-heading-2" data-jobs-toc="v2">一、入口与使用 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
+```text
+MacOS/
+├── README.md
+├── split.command/
+│   ├── split.command
+│   └── README.md
+└── merge.command/
+    ├── merge.command
+    └── README.md
+```
+
 | 入口 | 输入与输出 |
 | --- | --- |
-| [split.command](./split.command) | 一个普通文件或目录；单文件只处理自身，目录只勾选本层大于上限的文件。新分卷目录位于源旁：去最后扩展名，无扩展名用 `.parts`。 |
-| [merge.command](./merge.command) | 父目录或分卷目录；扫描本层及一级子目录，以完整原文件名分组，明确勾选后按数字顺序还原。 |
+| [拆分：入口与说明](./split.command/README.md) | 一个普通文件或目录；单文件只处理自身，目录只勾选本层大于上限的文件。新分卷目录位于源旁：去最后扩展名，无扩展名用 `.parts`。 |
+| [合并：入口与说明](./merge.command/README.md) | 父目录或分卷目录；扫描本层及一级子目录，以完整原文件名分组，明确勾选后按数字顺序还原。 |
 
-在本目录运行；也可双击后拖入路径，空输入使用脚本目录：
+每项功能使用独立文件夹，入口与其 `README.md` 同级。在本目录运行下面的完整相对路径，或进入对应功能文件夹双击。空输入使用该入口所在的功能文件夹；处理镜像时请传入或拖入实际文件 / 目录：
 
 ```shell
-/bin/zsh ./split.command \
+/bin/zsh ./split.command/split.command \
   '/镜像/大文件.iso'
-/bin/zsh ./merge.command \
+/bin/zsh ./merge.command/merge.command \
   '/镜像/大文件'
 ```
 
