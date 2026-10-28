@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "files": [
+    ".jobs-markdown-toc/README.md",
+    "MacOS/README.md",
+    "README.md",
+    "WindowsOS/Common/README.md",
+    "WindowsOS/README.md",
+    "WindowsOS/【WindowsOS】子卷合并/README.md",
+    "WindowsOS/【WindowsOS】源文件压缩分卷/README.md"
+  ]
+}
