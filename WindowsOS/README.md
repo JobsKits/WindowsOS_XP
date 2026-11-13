@@ -1,4 +1,4 @@
-# WindowsOS 分拆与合并工具
+# WindowsOS 下载、分拆与合并工具
 
 ![Jobs出品，必属精品](https://picsum.photos/1500/400)
 
@@ -25,11 +25,14 @@
 
 | 入口 | 当前能力 |
 | --- | --- |
+| [本仓 Release 下载](<./【WindowsOS】⏬下载当前仓库Release.cmd/README.md>) | 同名 CMD / PowerShell 自包含入口，选择本仓 Release 与附件，下载到仓库根 `Releases/<编码标签>/`；版本根同名 `.cmd` 是快捷入口。 |
 | [源文件分卷](<./【WindowsOS】源文件压缩分卷/README.md>) | 单文件或本层目录选择；50 / 100 / 1900 MiB、自定义或 `-LimitMiB` 上限；默认原始二进制 `.chunks` 分卷。 |
 | [子卷合并](<./【WindowsOS】子卷合并/README.md>) | 本层及一级子目录按组选择，检查完整连续卷号，数字排序无覆盖还原。 |
 | [Common](./Common/README.md) | 路径 / 交互 / 日志、流式分卷内核和 fzf 工作流。复制本包时必须保留目录相邻关系。 |
 
-双击功能目录内同名 `.cmd`，或从本目录运行：
+下载入口与分卷工具独立，不加载 Common；另需 Git，交互选择需 fzf，`-Help` / `-List` 用法及下载确认见[下载说明](<./【WindowsOS】⏬下载当前仓库Release.cmd/README.md>)。以下 `YES` 写入确认、`-Path`、`-LimitMiB`、`-Check` 和旧清单模式均属于分卷 / 合并工具。
+
+双击分卷功能目录内同名 `.cmd`，或从本目录运行：
 
 ```powershell
 & '.\【WindowsOS】源文件压缩分卷\【WindowsOS】源文件压缩分卷.ps1' `

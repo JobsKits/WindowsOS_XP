@@ -1,4 +1,4 @@
-# MacOS 分拆与合并工具
+# MacOS 下载、分拆与合并工具
 
 ![Jobs出品，必属精品](https://picsum.photos/1500/400)
 
@@ -26,6 +26,9 @@
 ```text
 MacOS/
 ├── README.md
+├── 【MacOS】⏬下载当前仓库Release.command/
+│   ├── 【MacOS】⏬下载当前仓库Release.command
+│   └── README.md
 ├── split.command/
 │   ├── split.command
 │   └── README.md
@@ -36,8 +39,11 @@ MacOS/
 
 | 入口 | 输入与输出 |
 | --- | --- |
+| [本仓 Release 下载](<./【MacOS】⏬下载当前仓库Release.command/README.md>) | 选择本仓 GitHub Release 与附件，下载到仓库根 `Releases/<编码标签>/`；版本根同名 `.command` 是快捷入口。 |
 | [拆分：入口与说明](./split.command/README.md) | 一个普通文件或目录；单文件只处理自身，目录只勾选本层大于上限的文件。新分卷目录位于源旁：去最后扩展名，无扩展名用 `.parts`。 |
 | [合并：入口与说明](./merge.command/README.md) | 父目录或分卷目录；扫描本层及一级子目录，以完整原文件名分组，明确勾选后按数字顺序还原。 |
+
+下载入口可独立于父仓运行；下载功能另需 Git、curl、jq、shasum，具体确认、按键和保护见[下载说明](<./【MacOS】⏬下载当前仓库Release.command/README.md>)。以下输入路径、输出位置和删除确认仅适用于拆分 / 合并。
 
 每项功能使用独立文件夹，入口与其 `README.md` 同级。在本目录运行下面的完整相对路径，或进入对应功能文件夹双击。空输入使用该入口所在的功能文件夹；处理镜像时请传入或拖入实际文件 / 目录：
 
