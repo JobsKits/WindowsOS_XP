@@ -25,21 +25,22 @@
 
 | 入口 | 当前能力 |
 | --- | --- |
-| [本仓 Release 下载](<./【WindowsOS】⏬下载当前仓库Release.cmd/README.md>) | 同名 CMD / PowerShell 自包含入口，选择本仓 Release 与附件，下载到仓库根 `Releases/<编码标签>/`；版本根同名 `.cmd` 是快捷入口。 |
-| [源文件分卷](<./【WindowsOS】源文件压缩分卷/README.md>) | 单文件或本层目录选择；50 / 100 / 1900 MiB、自定义或 `-LimitMiB` 上限；默认原始二进制 `.chunks` 分卷。 |
-| [子卷合并](<./【WindowsOS】子卷合并/README.md>) | 本层及一级子目录按组选择，检查完整连续卷号，数字排序无覆盖还原。 |
+| [【WindowsOS】⏬下载Release.cmd](<./【WindowsOS】⏬下载Release.cmd>) · [说明](<./【WindowsOS】⏬下载当前仓库Release.cmd/README.md>) | 转交功能包中的 CMD／PowerShell 实施脚本，选择本仓 Release 与附件，下载到仓库根 `Releases/<编码标签>/`；版本根的 `【WindowsOS】⏬下载当前仓库Release.cmd` 同样转交本功能包。 |
+| [【WindowsOS】源文件压缩分卷.cmd](<./【WindowsOS】源文件压缩分卷.cmd>) · [说明](<./【WindowsOS】源文件压缩分卷/README.md>) | 单文件或本层目录选择；50 / 100 / 1900 MiB、自定义或 `-LimitMiB` 上限；默认原始二进制 `.chunks` 分卷。 |
+| [【WindowsOS】子卷合并.cmd](<./【WindowsOS】子卷合并.cmd>) · [说明](<./【WindowsOS】子卷合并/README.md>) | 本层及一级子目录按组选择，检查完整连续卷号，数字排序无覆盖还原。 |
 | [Common](./Common/README.md) | 路径 / 交互 / 日志、流式分卷内核和 fzf 工作流。复制本包时必须保留目录相邻关系。 |
 
-下载入口与分卷工具独立，不加载 Common；另需 Git，交互选择需 fzf，`-Help` / `-List` 用法及下载确认见[下载说明](<./【WindowsOS】⏬下载当前仓库Release.cmd/README.md>)。以下 `YES` 写入确认、`-Path`、`-LimitMiB`、`-Check` 和旧清单模式均属于分卷 / 合并工具。
+平台外层的三个 `.cmd` 快捷入口从自身位置按相对路径转发到对应功能包，保留参数与退出码；真正 CMD／PowerShell 脚本及专属 README 留在功能包内，不复制实施逻辑。完整移动仓库仍可运行，版本根下载快捷入口也继续保留。下载入口与分卷工具独立，不加载 Common；另需 Git，交互选择需 fzf，`-Help` / `-List` 用法及下载确认见[下载说明](<./【WindowsOS】⏬下载当前仓库Release.cmd/README.md>)。以下 `YES` 写入确认、`-Path`、`-LimitMiB`、`-Check` 和旧清单模式均属于分卷 / 合并工具。
 
-双击分卷功能目录内同名 `.cmd`，或从本目录运行：
+双击本目录的平台前缀快捷入口，或从本目录运行以下命令；仍可进入功能包直接运行同名 `.cmd` 或 `.ps1`：
 
 ```powershell
-& '.\【WindowsOS】源文件压缩分卷\【WindowsOS】源文件压缩分卷.ps1' `
+& '.\【WindowsOS】源文件压缩分卷.cmd' `
     -Path 'D:\镜像\大文件.iso' `
     -LimitMiB 100
-& '.\【WindowsOS】子卷合并\【WindowsOS】子卷合并.ps1' `
+& '.\【WindowsOS】子卷合并.cmd' `
     -Path 'D:\镜像\大文件.iso.chunks'
+& '.\【WindowsOS】⏬下载Release.cmd' -List
 ```
 
 正常运行先显示自述并回车，真正写入前精确输入 `YES`；Ctrl+C、空选或 EOF 取消。默认模式使用 [**fzf**](https://github.com/junegunn/fzf)，回车单选、Esc 取消；拆分目录文件选择可用 `←` 返回上限。依赖仅检查，不自动安装。`.cmd` 仅为本次 PowerShell 进程设置执行策略，不持久改变系统策略。
@@ -54,6 +55,6 @@
 
 ## <span id="jobs-toc-heading-4" data-jobs-toc="v2">三、验证与日志 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-macOS + PowerShell 7 隔离内核已通过 264192 字节随机二进制文件、中文 `@` 文件名、11 卷的双向格式互通（两端重建 SHA-256 相同）。PowerShell 源码采用 UTF-8 BOM，CMD 保留 CRLF。已有原始卷 / 清单流程的隔离回归、源码复核及 PowerShell 7 语法检查通过；Windows PowerShell 5.1、真实 CMD 双击、fzf 和目标文件系统仍需 Windows 实机验收。日志在确认自述后显示实际临时路径，原始卷无需安装额外压缩软件。
+macOS + PowerShell 7 隔离内核已通过 264192 字节随机二进制文件、中文 `@` 文件名、11 卷的双向格式互通（两端重建 SHA-256 相同）。PowerShell 源码采用 UTF-8 BOM，CMD 保留 CRLF。已有原始卷 / 清单流程的隔离回归、源码复核及 PowerShell 7 语法检查通过；外层快捷入口仅完成相对目标、参数尾调用与 CRLF 静态核对；Windows PowerShell 5.1、真实 CMD 双击、fzf 和目标文件系统仍需 Windows 实机验收。日志在确认自述后显示实际临时路径，原始卷无需安装额外压缩软件。
 
 <a id="🔚" href="#前言" style="font-size:17px; color:green; font-weight:bold;">我是有底线的➤点我回到首页</a>

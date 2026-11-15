@@ -3,7 +3,7 @@
 # - 脚本名称：Jobs 子卷合并（运行时按当前文件名显示）。
 # - 核心用途：识别当前目录及一级子目录的 文件名@序号of总数，逐组校验并按数字顺序合并。
 # - 影响范围：在目标目录发布完整文件；已有文件不覆盖，仅输入 YES 才删除本组分卷。
-# - 运行提示：先阅读内置自述并回车；依赖只检查，不安装或升级；Ctrl+C 随时停止。
+# - 运行提示：无效路径或无分卷时持续询问；--release-dir 使产物留在下载目录；Ctrl+C 随时停止。
 
 # >>> Jobs terminal style protection v1 >>>
 # 临时保护当前终端配色，业务进程自行管理原有退出清理。
@@ -507,7 +507,7 @@ jobs_prompt_tee() {
 }
 # JOBS_INPUT_CHOICE_STYLE_END
 
-SCRIPT_VERSION="2026.10.28"
+SCRIPT_VERSION="2026.11.13"
 SCRIPT_SOURCE_PATH="$0"
 SCRIPT_DIR=""
 SCRIPT_PATH=""
@@ -516,6 +516,7 @@ LOG_FILE=""
 TARGET_DIR=""
 TARGET_EXPLICIT=0
 TARGET_IS_VOLUME_DIR=0
+TARGET_OUTPUT_IN_PLACE=0
 USE_COLOR=0
 NORMALIZED_DIR=""
 PARSED_NAME=""
@@ -555,12 +556,12 @@ show_script_intro_and_wait() {
   prepare_display
   message "======== Jobs 子卷合并（${SCRIPT_PATH:t}）========" '1;31'
   message "工具版本：$SCRIPT_VERSION" '0;34'
-  message '1、拖入目录或用一个位置参数指定；扫描本层与一级子目录，兼容平铺及分卷目录。' '0;34'
+  message '1、拖入目录或用一个位置参数指定；扫描本层与一级子目录，无效路径或未找到分卷时继续询问。' '0;34'
   message '2、按完整原文件名分组，检查总数、重复及缺号；按数字卷号合并，兼容补零编号。' '0;34'
-  message '3、显式指定分卷目录时在父目录还原；扫描父目录或默认目录时在该目录输出。' '0;34'
+  message '3、显式指定分卷目录时在父目录还原；默认目录及 --release-dir 指定目录在该目录输出。' '0;34'
   message '4、默认保留分卷；只有精确输入 YES 才删除本组分卷，不递归删除目录。' '0;34'
   message '5、只检查本机 fzf 和系统命令，不安装、不升级、不修改 Shell 配置。' '0;34'
-  message "日志：${LOG_FILE}；按 Ctrl+C 退出。" '0;34'
+  message "日志：${LOG_FILE}；不想合并可关闭终端，或按 Ctrl+C 退出。" '0;34'
   if [[ ! -t 0 ]]; then
     message '✖ 缺少交互终端，请在 Terminal 中运行。' '1;31'
     exit 1
@@ -626,7 +627,7 @@ normalize_directory_input() {
   [[ -d "$candidate" ]] || return 1
   NORMALIZED_DIR="${candidate:A}"
 }
-# 接收单个拖入目录，空行使用脚本目录，输入无效可重试。
+# 接收单个拖入目录，空行使用脚本目录，无效参数也转入交互重试。
 choose_target_directory() {
   local input=""
   (( $# <= 1 )) || { message '✖ 只接受一个目录位置参数。' '1;31'; return 1; }
@@ -648,15 +649,28 @@ choose_target_directory() {
       break
     fi
     message '✖ 不是有效的单个目录；支持引号、拖入转义和尾随空白，请重新输入。' '1;31'
-    (( $# == 0 )) || return 1
+    set --
   done
   message "ℹ 扫描目录：$TARGET_DIR"
 }
-# 目标输入失败时立即停止，避免随后扫描默认目录。
+# 目录不存在或未找到分卷时持续询问；输入结束才停止，不在 EOF 上空转。
 require_target_directory() {
-  if ! choose_target_directory "$@"; then
-    exit 1
+  if [[ "${1:-}" == --release-dir ]]; then
+    if (( $# != 2 )); then
+      message '✖ --release-dir 需要且只接受一个 Release 目录。' '1;31'
+      exit 1
+    fi
+    TARGET_OUTPUT_IN_PLACE=1
+    shift
   fi
+  while true; do
+    choose_target_directory "$@" || exit 1
+    if find_volume_groups; then
+      return 0
+    fi
+    message '➤ 请重新拖入包含分卷的父目录或分卷目录；不想合并可关闭终端。' '1;33'
+    set --
+  done
 }
 # 从最后一个合法后缀解析完整原文件名，保留名称中的 @。
 parse_volume_name() {
@@ -695,7 +709,7 @@ find_volume_groups() {
   GROUP_NAMES=()
   scan_volume_directory "$TARGET_DIR"
   TARGET_IS_VOLUME_DIR=0
-  if (( TARGET_EXPLICIT && ${#GROUP_NAMES} > 0 )); then
+  if (( TARGET_EXPLICIT && ! TARGET_OUTPUT_IN_PLACE && ${#GROUP_NAMES} > 0 )); then
     TARGET_IS_VOLUME_DIR=1
     message "ℹ 当前目录直接包含分卷，其本层组将还原到父目录：${TARGET_DIR:h}"
   fi
@@ -708,7 +722,7 @@ find_volume_groups() {
   done < <(find "$TARGET_DIR" -mindepth 1 -maxdepth 1 -type d -print0)
   if (( ${#GROUP_NAMES} == 0 )); then
     message 'ℹ 未找到 文件名@序号of总数 格式的分卷；.partial 断点不参与合并。'
-    exit 0
+    return 1
   fi
   message "ℹ 共检测到 ${#GROUP_NAMES} 组分卷。"
 }
@@ -887,8 +901,7 @@ main() {
   show_script_intro_and_wait # 先展示用途与影响，等待回车后继续。
   initialize_runtime # 确认后初始化日志和中断处理。
   check_environment # 只检查实际依赖，不安装或修改环境。
-  require_target_directory "$@" # 解析目录参数或拖入路径，默认扫描脚本目录。
-  find_volume_groups # 识别平铺与一级子目录分卷。
+  require_target_directory "$@" # 持续选择并扫描目录，找到分卷后才进入选择。
   select_volume_groups # 明确勾选分卷组，空选和取消不执行。
   merge_selected_groups # 按组校验合并并传播失败状态。
 }

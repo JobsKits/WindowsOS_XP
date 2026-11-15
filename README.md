@@ -39,7 +39,7 @@ Jobs 维护的系统镜像资料与双端分卷工具。镜像附件位于 [**Gi
 
 - 根快捷入口转交 `MacOS/【MacOS】⏬下载当前仓库Release.command/【MacOS】⏬下载当前仓库Release.command`，先阅读自述、回车继续，再通过 [**fzf**](https://formulae.brew.sh/formula/fzf) 选择版本和附件；最终下载提示后，空行或纯空白（含 Space／Tab）后回车开始，仅包含非空白文本的回答不执行。
 - 只检查依赖，不自动安装；需要系统 [**zsh**](https://www.zsh.org/)、[**Git**](https://git-scm.com/)、[**curl**](https://curl.se/)、[**jq**](https://jqlang.org/)、shasum 和 fzf。`--help` 查看帮助，`--list` 只读查询本仓全部发布版本及附件，无需 fzf。
-- 选中任意 ISO 分卷时补齐同组，支持断点续传、大小及 API 可用的 SHA-256 校验；已有完整文件校验后跳过，同名冲突保留并停止。全部完成后仅执行同版目录已有的 `merge.command`；缺失正常跳过，不补下载或复制合并工具。
+- 选中任意 ISO 分卷时补齐同组，支持断点续传、大小及 API 可用的 SHA-256 校验；已有完整文件校验后跳过，同名冲突保留并停止。所选附件全部下载或校验通过后，存在总卷数大于 1 的 ISO 分卷时自动调用 [MacOS 功能包内的 merge.command](./MacOS/merge.command/merge.command)，传入本次 Release 目录并将合并产物留在该目录。单个文件、多个独立 ISO 或 `@1of1` 不合并；缺少有效合并入口会报错并保留下载文件。
 
 ### <span id="jobs-toc-heading-4" data-jobs-toc="v2">[【WindowsOS】⏬下载当前仓库Release.cmd](<./【WindowsOS】⏬下载当前仓库Release.cmd>)</span><!-- jobs-toc:heading-end -->
 
@@ -56,6 +56,8 @@ Jobs 维护的系统镜像资料与双端分卷工具。镜像附件位于 [**Gi
 | 路径 | 职责 |
 | --- | --- |
 | [MacOS](./MacOS/README.md) | 拆分、合并各一个功能文件夹，入口与各自 README 同级；原始卷格式，明确勾选与精确删除确认。 |
+| MacOS 外层快捷入口 | [子卷合并](<./MacOS/【MacOS】子卷合并.command>)、[源文件压缩分卷](<./MacOS/【MacOS】源文件压缩分卷.command>)、[下载 Release](<./MacOS/【MacOS】⏬下载Release.command>)；按相对路径转发到本平台唯一实施脚本。 |
+| WindowsOS 外层快捷入口 | [子卷合并](<./WindowsOS/【WindowsOS】子卷合并.cmd>)、[源文件压缩分卷](<./WindowsOS/【WindowsOS】源文件压缩分卷.cmd>)、[下载 Release](<./WindowsOS/【WindowsOS】⏬下载Release.cmd>)；按相对路径转发到本平台对应功能包。 |
 | [WindowsOS](./WindowsOS/README.md) | PowerShell + CMD 的分卷、合并和 Common 模块，默认原始卷，保留旧清单 / gzip。 |
 | [Releases](https://github.com/JobsKits/WindowsOS_XP/releases) | 仅镜像完整 ISO 或原有镜像分卷；不再存放工具 ZIP 或单脚本附件。 |
 
@@ -63,15 +65,15 @@ Jobs 维护的系统镜像资料与双端分卷工具。镜像附件位于 [**Gi
 
 > **目的：** 按上限拆分明确指定的文件，或按完整分卷组还原。
 
-- 在 macOS 双击或以 `/bin/zsh` 运行两个命令；可传一个位置参数或启动后拖入文件 / 目录。
-- 上限为 50 / 100 / 1900 MiB 或自定义；目录只处理明确勾选对象。显式分卷目录在父目录还原，父目录中的子组输出到所输入父目录。
+- 在 MacOS 双击 `MacOS/` 外层的分卷／合并快捷入口，或以 `/bin/zsh` 运行；可传一个位置参数或启动后拖入文件 / 目录。快捷入口仅按相对路径转交功能包，不复制业务，整仓可迁移。
+- 上限为 50 / 100 / 1900 MiB 或自定义；目录只处理明确勾选对象。显式分卷目录在父目录还原，父目录中的子组输出到所输入父目录；`--release-dir <目录>` 将产物留在指定目录。合并路径无效或无分卷时持续询问，关闭终端、`Ctrl+C` 或输入结束可停止。
 - 大小、SHA-256 和输入状态通过后无覆盖发布。默认保留原件，成功后精确 `YES` 才删除对应清单；失败保留候选。
 
 ### <span id="jobs-toc-heading-7" data-jobs-toc="v2">[WindowsOS 分卷与合并](./WindowsOS/README.md)</span><!-- jobs-toc:heading-end -->
 
 > **目的：** 使用原生 PowerShell / CMD 处理互通原始卷，并保留旧清单模式。
 
-- 双击两个功能目录中的 `.cmd`，或运行同名 `.ps1`；拆分支持单文件、目录、`-Path`、`-LimitMiB`，合并支持分卷目录或其父目录。
+- 双击 `WindowsOS/` 外层的分卷／合并 `.cmd` 快捷入口，或进入功能包运行同名 `.cmd`／`.ps1`；拆分支持单文件、目录、`-Path`、`-LimitMiB`，合并支持分卷目录或其父目录。
 - 默认 `完整原文件名@序号of总数`，按数字顺序合并并核对缺卷、重号、大小和 SHA-256；现有结果拒绝覆盖，原件始终保留。
 - `-LegacyManifest` 使用旧 `JobsSplit-1` 清单 / gzip，不与 `-Path` / `-LimitMiB` 混用；`-Check` 只读检查。普通操作先回车阅读自述、写入前精确 `YES`，fzf 取消不执行。
 

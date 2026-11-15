@@ -6,7 +6,7 @@
 
 ## 🔥 <span id="前言">前言</span>
 
-在 [**MacOS**](https://www.apple.com/macos/) 仅下载 [JobsKits/WindowsOS_XP 的 GitHub Release](https://github.com/JobsKits/WindowsOS_XP/releases)。本目录内 [【MacOS】⏬下载当前仓库Release.command](<./【MacOS】⏬下载当前仓库Release.command>) 是自包含实施脚本；[版本根快捷入口](<../../【MacOS】⏬下载当前仓库Release.command>) 只按相对位置转交它。单独克隆本仓即可使用，保留本目录相对布局即可迁移。返回[MacOS 总览](../README.md)或[仓库总览](../../README.md)。
+在 [**MacOS**](https://www.apple.com/macos/) 仅下载 [JobsKits/WindowsOS_XP 的 GitHub Release](https://github.com/JobsKits/WindowsOS_XP/releases)。本目录内 [【MacOS】⏬下载当前仓库Release.command](<./【MacOS】⏬下载当前仓库Release.command>) 是自包含实施脚本；[版本根快捷入口](<../../【MacOS】⏬下载当前仓库Release.command>) 与平台外层的 [【MacOS】⏬下载Release.command](<../【MacOS】⏬下载Release.command>) 均按相对路径转交它。单独克隆本仓即可使用，保留本目录相对布局即可迁移。返回[MacOS 总览](../README.md)或[仓库总览](../../README.md)。
 
 清单请求前会显示当前来源，例如：
 
@@ -44,6 +44,6 @@
 - 每片按大小及 API 提供的 SHA-256 校验，通过后才发布完成文件。已有完整文件校验后跳过；同名冲突、身份不符、不安全路径及本地写入错误保留原文件并停止。每版使用系统锁，拒绝并行改写同一下载。
 - 网络、HTTP 传输与候选校验失败持续退避重试，优先遵守服务器更长等待，不设次数或总时长上限；明确 API 限流在原分页自动等待。非限流清单错误可重试、使用已校验的本地历史计划或返回；历史计划不代表线上最新清单。
 - `Ctrl+C` 或关闭终端可取消，保留完成文件和断点。不要在运行中删除锁或移动下载目录；恢复后重新运行并选择同版即可继续。
-- 仅当所选 ISO 分卷全部校验通过，且同版目录已有 `merge.command` 时调用它；没有脚本正常跳过，不自动补选下载或复制 Git 工具。合并保留原交互和删除确认，成功退出不等于已生成镜像。不挂载镜像或安装系统。
+- 所选附件全部下载或既有文件校验通过后，若存在总卷数大于 1 的 ISO 分卷，自动调用 MacOS 功能包内的 [merge.command](../merge.command/merge.command)，传入 `--release-dir <本次Release目录>`；扫描和合并输出均在该下载目录。单个文件、多个独立 ISO 或 `@1of1` 不合并，不运行下载附件中的脚本。缺少有效的仓库合并入口时报错并保留下载文件。合并保留自述、分卷组选择及精确 `YES` 删除确认，期间持续持有本版锁；正常退出也可能是取消选择，不等于已生成镜像。不挂载镜像或安装系统。
 
 <a id="🔚" href="#前言" style="font-size:17px; color:green; font-weight:bold;">我是有底线的➤点我回到首页</a>
